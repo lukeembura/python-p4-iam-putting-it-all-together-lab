@@ -88,9 +88,13 @@ class TestUser:
         with app.app_context():
 
             User.query.delete()
+            Recipe.query.delete()
             db.session.commit()
 
             user = User(username="Prabhdip")
+            user.password_hash = "password"
+            db.session.add(user)
+            db.session.commit()  # Commit so user gets an ID
 
             recipe_1 = Recipe(
                 title="Delicious Shed Ham",
@@ -103,6 +107,7 @@ class TestUser:
                     """ smallness northward situation few her certainty""" + \
                     """ something.""",
                 minutes_to_complete=60,
+                user_id=user.id
                 )
             recipe_2 = Recipe(
                 title="Hasty Party Ham",
@@ -113,12 +118,10 @@ class TestUser:
                              """ unpacked be advanced at. Confined in declared""" + \
                              """ marianne is vicinity.""",
                 minutes_to_complete=30,
+                user_id=user.id
                 )
 
-            user.recipes.append(recipe_1)
-            user.recipes.append(recipe_2)
-
-            db.session.add_all([user, recipe_1, recipe_2])
+            db.session.add_all([recipe_1, recipe_2])
             db.session.commit()
 
             # check that all were created in db
